@@ -2,9 +2,7 @@ services:
   easytier:
     image: ghcr.io/kenny8zeng/kenny8zeng/docker-easytier:latest
     container_name: easytier
-    ports:
-      - "32379:32379"
-      - "32380:32380"
+    network_mode: host
     volumes:
       - ${PWD}/volume:/data
     environment:
