@@ -1,3 +1,7 @@
+ARG VERSION
+
+ENV VERSION=${VERSION}
+
 # 使用最小的 Linux 系统作为基础镜像
 FROM alpine:latest
  
