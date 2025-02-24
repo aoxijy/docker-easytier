@@ -1,9 +1,10 @@
 ARG VERSION
 
-ENV VERSION=${VERSION}
-
 # 使用最小的 Linux 系统作为基础镜像
 FROM alpine:latest
+
+# 设置版本号环境变量
+ENV VERSION=${VERSION}
  
 # 安装必要的工具
 RUN apk add --no-cache curl
