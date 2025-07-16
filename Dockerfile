@@ -5,7 +5,7 @@ FROM alpine:latest
 ARG VERSION=v2.3.2
 
 # 安装必要工具
-RUN apk add --no-cache curl unzip iptables iproute2
+RUN apk add --no-cache curl unzip iptables iproute2 jq
 
 # 创建工作目录
 WORKDIR /app
@@ -21,18 +21,24 @@ RUN mkdir -p /dev/net \
     && mknod /dev/net/tun c 10 200 \
     && chmod 0666 /dev/net/tun
 
-# 暴露 EasyTier 标准端口 (TCP/UDP)
+# 创建默认配置文件目录
+RUN mkdir -p /etc/easytier
+
+# 创建默认配置文件
+RUN echo '[network_identity]' > /etc/easytier/config.toml \
+    && echo 'network_name = "default"' >> /etc/easytier/config.toml \
+    && echo 'network_secret = "change-me"' >> /etc/easytier/config.toml \
+    && echo '' >> /etc/easytier/config.toml \
+    && echo '[flags]' >> /etc/easytier/config.toml \
+    && echo 'dev_name = "easytier0"' >> /etc/easytier/config.toml \
+    && echo 'enable_ipv6 = false' >> /etc/easytier/config.toml
+
+# 暴露 EasyTier 标准端口
 EXPOSE 11010/tcp 11010/udp 11011/tcp 11020/tcp
 
-# 设置环境变量
-ENV ET_CONFIG_SERVER="udp://47.119.115.81:22020/gqru" \
-    ET_MACHINE_ID="docker-$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)" \
-    ET_RPC_PORTAL="0.0.0.0:15888" \
-    ET_HOSTNAME="docker-node"
+# 设置入口点脚本
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # 设置容器启动命令
-CMD ["/app/easytier-core", \
-    "--config-server", "${ET_CONFIG_SERVER}", \
-    "--machine-id", "${ET_MACHINE_ID}", \
-    "--rpc-portal", "${ET_RPC_PORTAL}", \
-    "--hostname", "${ET_HOSTNAME}"]
+ENTRYPOINT ["/app/entrypoint.sh"]
