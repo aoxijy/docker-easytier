@@ -21,48 +21,13 @@ RUN mkdir -p /dev/net \
     && mknod /dev/net/tun c 10 200 \
     && chmod 0666 /dev/net/tun
 
-# 创建配置目录和默认配置文件
-RUN mkdir -p /etc/easytier && \
-    cat > /etc/easytier/config.toml << 'EOF'
-# EasyTier 默认配置
-instance_name = "default"
-host_name = "docker-node"
+# 创建配置目录
+RUN mkdir -p /etc/easytier
 
-# 虚拟网络设置
-ipv4 = "10.110.0.1"
-dhcp = false
-exit_nodes = []
+# 复制您的默认配置文件（从构建上下文复制）
+COPY config.toml /etc/easytier/config.toml
 
-# RPC 管理接口
-rpc_portal = "0.0.0.0:15888"
-
-# 监听器配置
-listeners = [
-    "tcp://0.0.0.0:11010",
-    "udp://0.0.0.0:11010",
-    "tcp://[::]:11010",
-    "udp://[::]:11010",
-    "wss://0.0.0.0:11011/",
-    "wss://[::]:11011/"
-]
-
-# 网络凭证
-[network_identity]
-network_name = "default-network"
-network_secret = "change-me-please"
-
-# 初始对等节点
-[[peer]]
-uri = "tcp://public.easytier.top:11010"
-
-# 高级参数
-[flags]
-dev_name = "easytier0"
-enable_ipv6 = false
-enable_exit_node = false
-EOF
-
-# 创建 entrypoint 脚本（简化版）
+# 创建 entrypoint 脚本
 RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
     echo 'if [ -n "$ET_CONFIG_SERVER" ]; then' >> /app/entrypoint.sh && \
     echo '    tmp_file=$(mktemp)' >> /app/entrypoint.sh && \
