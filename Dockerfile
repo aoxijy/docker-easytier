@@ -2,7 +2,7 @@
 FROM alpine:latest
 
 # 设置版本号环境变量
-ARG VERSION=v2.1.2
+ARG VERSION=v2.3.2
 
 # 安装必要工具
 RUN apk add --no-cache curl unzip iptables iproute2
