@@ -62,28 +62,22 @@ enable_ipv6 = false
 enable_exit_node = false
 EOF
 
-# 创建 entrypoint 脚本
-RUN echo $'#!/bin/sh\n\
-# 如果设置了环境变量，更新配置文件\n\
-if [ -n "$ET_CONFIG_SERVER" ]; then\n\
-    tmp_file=$(mktemp)\n\
-    jq --arg server "$ET_CONFIG_SERVER" \'\
-.config_server = $server\' \
-/etc/easytier/config.toml > "$tmp_file" \\\
-    && mv "$tmp_file" /etc/easytier/config.toml\n\
-fi\n\
-\n\
-if [ -n "$ET_MACHINE_ID" ]; then\n\
-    tmp_file=$(mktemp)\n\
-    jq --arg id "$ET_MACHINE_ID" \'\
-.machine_id = $id\' \
-/etc/easytier/config.toml > "$tmp_file" \\\
-    && mv "$tmp_file" /etc/easytier/config.toml\n\
-fi\n\
-\n\
-# 启动 EasyTier\n\
-exec /app/easytier-core --config-file /etc/easytier/config.toml' > /app/entrypoint.sh \
-    && chmod +x /app/entrypoint.sh
+# 创建 entrypoint 脚本（简化版）
+RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
+    echo 'if [ -n "$ET_CONFIG_SERVER" ]; then' >> /app/entrypoint.sh && \
+    echo '    tmp_file=$(mktemp)' >> /app/entrypoint.sh && \
+    echo '    jq --arg server "$ET_CONFIG_SERVER" '\''.config_server = $server'\'' /etc/easytier/config.toml > "$tmp_file"' >> /app/entrypoint.sh && \
+    echo '    [ -s "$tmp_file" ] && mv "$tmp_file" /etc/easytier/config.toml' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo 'if [ -n "$ET_MACHINE_ID" ]; then' >> /app/entrypoint.sh && \
+    echo '    tmp_file=$(mktemp)' >> /app/entrypoint.sh && \
+    echo '    jq --arg id "$ET_MACHINE_ID" '\''.machine_id = $id'\'' /etc/easytier/config.toml > "$tmp_file"' >> /app/entrypoint.sh && \
+    echo '    [ -s "$tmp_file" ] && mv "$tmp_file" /etc/easytier/config.toml' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo 'exec /app/easytier-core --config-file /etc/easytier/config.toml' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
 
 # 暴露标准端口
 EXPOSE 11010/tcp 11010/udp 11011/tcp 11020/tcp 15888/tcp
