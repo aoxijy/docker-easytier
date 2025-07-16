@@ -1,5 +1,5 @@
 instance_name = "default"
-host_name = "comm.host.xxx"
+host_name = "gqru"
 
 # 虚拟网络的 IPv4 地址
 ipv4 = "10.10.1.250"
@@ -25,15 +25,15 @@ listeners = [
 
 # 网络凭证
 [network_identity]
-network_name = "net.common.xxx"
-network_secret = "b9a6f0fd40ce26d81d54"
+network_name = "gqru"
+network_secret = "kulacc520"
 
 # 连接的对等节点
 [[peer]]
-uri = "tcp://ch01.xxxnet.com:32379"
+uri = "tcp://0.0.0.0:60006"
 
 [[peer]]
-uri = "tcp://ch02.xxxnet.com:32379"
+uri = "tcp://0.0.0.0:60006"
 
 # 其他参数
 [flags]
