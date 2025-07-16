@@ -6,7 +6,7 @@ on:
       easytier_version:
         description: 'EasyTier 版本号 (例如 v2.1.2)'
         required: true
-        default: 'v2.1.2'
+        default: 'v2.3.2'
       docker_image_version:
         description: 'Docker 镜像标签 (例如 1.0)'
         required: true
